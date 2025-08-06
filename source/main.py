@@ -133,7 +133,8 @@ if __name__ == "__main__":
         "--action",
         dest="ACTION",
         default='export',
-        help="export from or import to a DB file (default export)",
+        choices=['export','dump'],
+        help="export from or import to a DB file or dump plain text (default export)",
     )
     parser.add_option(
         "-d",
@@ -194,7 +195,15 @@ if __name__ == "__main__":
             with open(options.JSON_FILE, "w", encoding="utf8") as f:
                 #  json.dump(json_data, f, ensure_ascii=False) :  not readable because not formatted, so we force a nice format
                 f.write(print_json(json_data, quiet=True))
+    elif options.ACTION == 'dump':
+        json_data = export_as_json(ignore_types=options.IGNORE_TYPES)
+        for title, notes in json_data.items():
+            title, author = title.split('_|_')
+            print('###', title, 'by', author, '\n')
+            for value in notes.values():
+                print(value['quotation']['text'], '\n')
     else:
+        assert options.ACTION == 'import'
         with open(options.JSON_FILE, "r", encoding="utf8") as json_file:
             json_data = json.load(json_file)
         import_notes_into_database(json_data=json_data, ignore_types=options.IGNORE_TYPES, dry_run=options.DRY_RUN, verbose=options.VERBOSE, skip_unknown_books=options.SKIP_UNKNOWN_BOOKS)
