@@ -162,6 +162,7 @@ if __name__ == "__main__":
         "--ignore-type",
         action="append",
         dest="IGNORE_TYPES",
+        default=[],
         type="str",
         help="ignore some types (among bookmark highlight note)",
     )
